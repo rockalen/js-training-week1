@@ -43,6 +43,7 @@
         var clearAllTask = document.getElementById('clearTask')
         // 監聽click
         addBtn.addEventListener('click',addTodo);
+        todoInput.addEventListener('keyup',enterKey);
         clearAllTask.addEventListener('click',clearTask);
         todoList.addEventListener('click',taskOperation);
         // 宣告陣列
@@ -89,7 +90,7 @@
     // 使用enter key 輸入
     function enterKey(e){
         e.preventDefault();
-        if (e.keyCode===13) addTodo;
+        if (e.keyCode===13) addTodo();
     }
     // 移除單筆任務函數
     function removeTask(taskID){
