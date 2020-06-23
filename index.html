@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+    <style>
+      .completed {
+        text-decoration: line-through
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app" class="container my-3">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">待辦事項</span>
+        </div>
+        <input type="text" class="form-control" placeholder="準備要做的任務" id="newTodo">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button" id="addTodo">新增</button>
+        </div>
+      </div>
+      <div class="card text-center">
+        <ul class="list-group list-group-flush text-left" id="todoList">
+        </ul>
+        <div class="card-footer d-flex justify-content-between">
+          <span>還有 <span id="taskCount">0</span> 筆任務</span>
+          <a href="#" id="clearTask">清除所有任務</a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        // 定義DOM變數
+        var todoInput = document.getElementById('newTodo');
+        var addBtn = document.getElementById('addTodo');
+        var todoList = document.getElementById('todoList');
+        var cntTodo = document.getElementById('taskCount');
+        var clearAllTask = document.getElementById('clearTask')
+        // 監聽click
+        addBtn.addEventListener('click',addTodo);
+        clearAllTask.addEventListener('click',clearTask);
+        todoList.addEventListener('click',taskOperation);
+        // 宣告陣列
+        var todoData = [];
+        // 新增task函數
+        function addTodo() {
+            var newTask = todoInput.value.trim();
+            var timeStamp = Math.floor(Date.now());
+            if (newTask !== '') {                
+                todoData.push({
+                id: timeStamp,
+                title: document.getElementById('newTodo').value,
+                completed: false,
+                })
+            renderPage(todoData);
+            todoInput.value = '';
+            }
+        }
+        // 渲染更新畫面函數
+        function renderPage(arrData) {
+            var str = '';
+            arrData.forEach(function (item) {
+            str += `<li class="list-group-item">
+            <div class="d-flex">
+            <div class="form-check">
+            <input type="checkbox" class="form-check-input" ${item.completed ? 'checked' : ''} data-action="complete" data-id="${item.id}">
+            <label class="form-check-label ${item.completed ? 'completed' : ''}" data-action="complete" data-id="${item.id}"> ${item.title}</label>
+            </div>
+            <button type="button" class="close ml-auto" aria-label="Close">
+            <span aria-hidden="true" data-action="remove" data-id="${item.id}">&times;</span>
+            </button>
+            </div>
+            </li>`;
+            })
+            todoList.innerHTML = str;
+            cntTodo.textContent = arrData.length;           
+        }
+    // 清除所有任務函數
+    function clearTask(e){
+        e.preventDefault();
+        todoData = [];
+        renderPage(todoData);        
+    }
+    // 移除單筆任務函數
+    function removeTask(taskID){
+        var newIndex = 0;
+        todoData.forEach(function (item, key) {
+            if (taskID == item.id) {
+              newIndex = key;
+            }
+        })
+        todoData.splice(newIndex, 1);
+    }
+    // 單筆任務完成函數   
+    function taskCompleted(taskID){
+        todoData.forEach(function (item) {
+            if (taskID == item.id) {
+              if (item.completed) {
+                item.completed = false;
+              } else {
+                item.completed = true;
+              }
+            }
+        })
+    }
+    // 單筆任務操作選擇函數
+    function taskOperation(e){   
+        var action = e.target.dataset.action;
+        var taskID = e.target.dataset.id;
+            // 判斷當action 為 'remove'時，呼叫 removeTask移除任務函數
+        if (action == 'remove') {       
+            removeTask(taskID); 
+            //否則當action 為 'complete'時，呼叫 taskCompleted移除任務函數   
+        }else if (action == 'complete') {       
+            taskCompleted(taskID);            
+        }
+        // 渲染更新畫面
+        renderPage(todoData);
+    }
+   
+    </script>
+  </body>
+
+</html>
